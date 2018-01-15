@@ -1,0 +1,32 @@
+{
+  "name": "liri-node-app",
+  "version": "1.0.0",
+  "description": "This is Baraka's first Node App in the command line",
+  "main": "index.js",
+  "scripts": {
+    "test": "gbm"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gbmahili/Liri-Node-App.git"
+  },
+  "keywords": [
+    "Baraka",
+    "Node",
+    "App",
+    "Mahili",
+    "Node",
+    "App",
+    "Liri",
+    "App",
+    "Mahili",
+    "Liri",
+    "App"
+  ],
+  "author": "Baraka Georges Mahili",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gbmahili/Liri-Node-App/issues"
+  },
+  "homepage": "https://github.com/gbmahili/Liri-Node-App#readme"
+}
