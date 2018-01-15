@@ -1,6 +1,6 @@
 # Liri-Node-App
 
-In order to use this app, please provide your own .env file. The env file will need to contain the following information: (You can copy and paste it from your tweeter and spotify developer pages):
+In order to use this app, please provide your own `.env` file. The env file will need to contain the following information: (You can copy and paste it from your tweeter and spotify developer pages):
 
 ### Spotify API keys
 
