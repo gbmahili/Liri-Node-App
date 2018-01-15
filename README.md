@@ -2,12 +2,12 @@
 
 In order to use this app, please provide your own .env file. The env file will need to contain the following information: (You can copy and paste it from your tweeter and spotify developer pages):
 
-# Spotify API keys
+### Spotify API keys
 
 SPOTIFY_ID=your-spotify-id
 SPOTIFY_SECRET=your-spotify-secret
 
-# Twitter API keys
+### Twitter API keys
 
 TWITTER_CONSUMER_KEY=your-twitter-consumer-key
 TWITTER_CONSUMER_SECRET=your-twitter-consumer-secret
