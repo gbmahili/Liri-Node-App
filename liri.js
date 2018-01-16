@@ -1,21 +1,42 @@
 require("dotenv").config();
 
-// Import the keys.js file
-var keys = require("./keys.js");
+// Import ALL the keys from the keys.js file
+const keys = require("./keys.js");
 
+// Required Spotify
+const Spotify = require('node-spotify-api');
 // Get my Spotify keys:
-// var spotify = new Spotify(keys.spotify);
+const spotify = new Spotify(keys.spotify);
 
 // Require the twitter package
-var Twitter = require('twitter');
-// Get the twitter keys
+const Twitter = require('twitter');
+// Get my Twitter keys
 const client = new Twitter(keys.twitter);
+
+// Get the OMDAPI keys
 const omdb_api_key = keys.omdb.omdb_api_key;
-// Get the screen name"
 
-var gBMahiliLiriAction = process.argv[2];
+// Let's create the action that will be used in the terminal...we will use ('my-tweets', 'movie-this', 'spotify-this-song', 'do-what-it-says'). Check the switch function for usage
+const gBMahiliLiriAction = process.argv[2];
 
+// Let's create an object that store out methods to call when we call each of the above actions:
 var gbmbLiri = {
+    // Let's create a query that will be used in the whole app:
+    createQuery : () => {
+        // Create the query name from the user's input
+        query = process.argv[3];
+        // Now, let's check if the user entered more than one word for the query title
+        // But First, let's find out how many arguments the user passed in
+        allArguments = process.argv;
+        // Then, we check if the arguments are already more than 4...
+        // remember that process.argv already comes with 2 args, then when we add our app name, that's 3...and if a user types in the first word of the query, that's the 4th already
+        if (allArguments.length > 4) {
+            // If there are more that 4 arfuments, means the user typed in more than one word of the query...then we create our own query name with the rest of the words
+            for (let i = 4; i < allArguments.length; i++) {
+                query += "+" + allArguments[i];
+            }
+        }
+    },
     // Twitter Script:
     my_tweets : () => {
         // Get my last 20 tweets
@@ -31,27 +52,15 @@ var gbmbLiri = {
     movie_this :() => {
         // Require the request package
         var request = require("request");
-        // Create the movie name from the user's input
-        var movieName = process.argv[3]; 
-        // Now, let's check if the user entered more than one word for the movie title
-        // But First, let's find out how many arguments the user passed in
-        var allArguments = process.argv;        
-        // Then, we check if the arguments are already more than 4...
-        // remember that process.argv already comes with 2 args, then when we add our app name, that's 3...and if a user types in the first word of the movie, that's the 4th already
-        if (allArguments.length > 4) {
-            // If there are more that 4 arfuments, means the user typed in more than one word of the movie...then we create our own movie name with the rest of the words
-            for (let i = 4; i < allArguments.length; i++){
-                movieName += "+" +allArguments[i];               
-            }
-        }
-
+        // Call the createQuery method to create the query
+        gbmbLiri.createQuery();
         // Let's also check if a user didn't type in anything. We will use a default movie name called 'Mr. Nobody' if a user does not provide one
         if (allArguments.length == 3) {
-            movieName = "Mr.+Nobody";
+            query = "Mr.+Nobody";
         }
-        //console.log(movieName);
+        //console.log(query);
         // Create the url    
-        var url = `http://www.omdbapi.com/?apikey=${omdb_api_key}&t=${movieName}`;
+        var url = `http://www.omdbapi.com/?apikey=${omdb_api_key}&t=${query}`;
         // Get the data using request
         request(url, (error, response, body) => {
             // Check if there is no error and the status code is 200, means OK
@@ -60,23 +69,55 @@ var gbmbLiri = {
                 var movieInfo = JSON.parse(body);
                 // Create data to be shown
                 var showMovieInfo = `
-                        \n****************************************
-                        \n HERE ARE THE RESULTS ABOUT YOUR MOVIE:
-                        \n****************************************
-                        \n* Title of the movie: ${movieInfo.Title}
-                        \n* Year the movie came out: ${movieInfo.Year}
-                        \n* IMDB Rating of the movie: ${movieInfo.Ratings[0].Value}
-                        \n* Rotten Tomatoes Rating of the movie: ${movieInfo.Ratings[1].Value}
-                        \n* Country where the movie was produced: ${movieInfo.Country}
-                        \n* Language of the movie: ${movieInfo.Language}
-                        \n* Plot of the movie: ${movieInfo.Plot}
-                        \n* Actors in the movie: ${movieInfo.Actors}
-                        \n****************************************
+                        |----------------------------------------|
+                        -HERE ARE THE RESULTS ABOUT YOUR MOVIE:-
+                        |----------------------------------------|
+                        * Title of the movie: ${movieInfo.Title}
+                        * Year the movie came out: ${movieInfo.Year}
+                        * IMDB Rating of the movie: ${movieInfo.Ratings[0].Value}
+                        * Rotten Tomatoes Rating of the movie: ${movieInfo.Ratings[1].Value}
+                        * Country where the movie was produced: ${movieInfo.Country}
+                        * Language of the movie: ${movieInfo.Language}
+                        * Plot of the movie: ${movieInfo.Plot}
+                        * Actors in the movie: ${movieInfo.Actors}
+                        |----------------------------------------|
                 `;
                 // Log the data to the bash
                 console.log(showMovieInfo);
             }
         });
+    },
+
+    // Songs from spotify
+    spotify_this_song : () => {
+        // Get the search word
+        gbmbLiri.createQuery();
+
+        if (allArguments.length == 3) {
+            query = "The Sign by Ace of Base";
+        }
+
+        
+
+        spotify.search({ type: 'track', query: query, limit: 1 }, function (err, data) {
+            if (err) {
+                return console.log('Error occurred: ' + err);
+            }
+            // Let's create the needed info to display using the data retrieved from Spotify:
+            var displaySong = `
+                |----------------------------------------|
+                |-HERE ARE THE RESULTS ABOUT YOUR SONG:--|
+                |----------------------------------------|
+                | Artist(s): ${data.tracks.items[0].album.artists[0].name}
+                | Song's name: ${data.tracks.items[0].name}
+                | Preview Link: ${data.tracks.items[0].preview_url}
+                | Album Name: ${data.tracks.items[0].album.name}
+                |----------------------------------------|
+            `;
+            console.log(displaySong);
+        });
+        
+        
     }
 };
 
@@ -86,6 +127,9 @@ switch (gBMahiliLiriAction) {
         break;
     case "movie-this":
         gbmbLiri.movie_this();
+        break;
+    case "spotify-this-song":
+        gbmbLiri.spotify_this_song();
         break;
 
     default:
