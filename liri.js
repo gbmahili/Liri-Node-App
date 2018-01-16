@@ -92,13 +92,11 @@ var gbmbLiri = {
     spotify_this_song : () => {
         // Get the search word
         gbmbLiri.createQuery();
-
+        // Check if more than 3 arfuments were provided
         if (allArguments.length == 3) {
             query = "The Sign by Ace of Base";
         }
-
-        
-
+        // Call the spotify search method
         spotify.search({ type: 'track', query: query, limit: 1 }, function (err, data) {
             if (err) {
                 return console.log('Error occurred: ' + err);
@@ -115,9 +113,19 @@ var gbmbLiri = {
                 |----------------------------------------|
             `;
             console.log(displaySong);
+        });  
+    },
+
+    // do_what_it_says
+    do_what_it_says : () => {
+        console.log("Do the task in the random.txt");
+        // To read what's in the random.txt file, we need to bring in fs
+        var fs = require("fs");
+        // Then, we can use that variable to read:
+        fs.readFile("random.txt","utf8", (err, data) => {
+            // We can do whatever we what to do with the data:
+            console.log(data);
         });
-        
-        
     }
 };
 
@@ -131,7 +139,9 @@ switch (gBMahiliLiriAction) {
     case "spotify-this-song":
         gbmbLiri.spotify_this_song();
         break;
-
+    case "do-what-it-says":
+        gbmbLiri.do_what_it_says();
+        break;
     default:
         break;
 }
