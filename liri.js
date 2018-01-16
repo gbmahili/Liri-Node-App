@@ -49,16 +49,21 @@ var gbmbLiri = {
     },
 
     // OMDB
-    movie_this :() => {
+    movie_this: (altQuery) => {
         // Require the request package
         var request = require("request");
         // Call the createQuery method to create the query
         gbmbLiri.createQuery();
+        
         // Let's also check if a user didn't type in anything. We will use a default movie name called 'Mr. Nobody' if a user does not provide one
         if (allArguments.length == 3) {
             query = "Mr.+Nobody";
         }
-        //console.log(query);
+        // Also, we are checking if an altQuery was passed in our function, if it was passed in, then we use it as our query. 
+        // This will be useful when calling the do-what-it-says query
+        if (typeof altQuery !== 'undefined') {
+            query = altQuery;
+        }
         // Create the url    
         var url = `http://www.omdbapi.com/?apikey=${omdb_api_key}&t=${query}`;
         // Get the data using request
@@ -89,13 +94,18 @@ var gbmbLiri = {
     },
 
     // Songs from spotify
-    spotify_this_song : () => {
+    spotify_this_song : (altQuery) => {        
         // Get the search word
         gbmbLiri.createQuery();
         // Check if more than 3 arfuments were provided
         if (allArguments.length == 3) {
             query = "The Sign by Ace of Base";
         }
+        // Also, we are checking if an altQuery was passed in our function, if it was passed in, then we use it as our query. 
+        // This will be useful when calling the do-what-it-says query
+        if (typeof altQuery !== 'undefined') {
+            query = altQuery;
+        }        
         // Call the spotify search method
         spotify.search({ type: 'track', query: query, limit: 1 }, function (err, data) {
             if (err) {
@@ -118,13 +128,30 @@ var gbmbLiri = {
 
     // do_what_it_says
     do_what_it_says : () => {
-        console.log("Do the task in the random.txt");
         // To read what's in the random.txt file, we need to bring in fs
         var fs = require("fs");
         // Then, we can use that variable to read:
         fs.readFile("random.txt","utf8", (err, data) => {
             // We can do whatever we what to do with the data:
-            console.log(data);
+            // First, let's split the string and turn it into an array
+            data = data.split(",");
+            // Then, let's grab the action to do and the task to be done
+            var action = data[0];
+            var task =  data[1];  
+            //  Now, let's check if the action is spotify-this-song or anything else using the switch statement:
+            switch (action) {
+                case "spotify-this-song":
+                    // If so, we run that method and pass in our task as the query
+                    gbmbLiri.spotify_this_song(task);
+                    break;
+                case "movie-this":
+                    gbmbLiri.movie_this(task);
+                    break;
+            
+                default:
+                    break;
+            };
+            
         });
     }
 };
