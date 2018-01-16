@@ -1,5 +1,5 @@
+// Let's require the environment configuration
 require("dotenv").config();
-
 // Import ALL the keys from the keys.js file
 const keys = require("./keys.js");
 
@@ -38,13 +38,12 @@ var gbmbLiri = {
         }
     },
     // Twitter Script:
-    my_tweets : () => {
+    my_tweets: (altQuery) => {        
         // Get my last 20 tweets
-        client.get('statuses/user_timeline', { q: 'barakamahili', count: 21 }, function (error, tweets, response) {
+        client.get('statuses/user_timeline', { q: "BarakaMahili", count: 20 }, function (error, tweets, response) {
             tweets.forEach((element, index) => {
                 console.log(`\n${index + 1}\nTweet Message: ${element.text}\nCreated at: ${element.created_at}\n------------------------------------`);
             });
-            //console.log(tweets);  
         });
     },
 
@@ -147,7 +146,6 @@ var gbmbLiri = {
                 case "movie-this":
                     gbmbLiri.movie_this(task);
                     break;
-            
                 default:
                     break;
             };
