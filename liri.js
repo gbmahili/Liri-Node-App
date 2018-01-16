@@ -3,6 +3,9 @@ require("dotenv").config();
 // Import ALL the keys from the keys.js file
 const keys = require("./keys.js");
 
+// To read what's in the random.txt file, we need to bring in fs
+var fs = require("fs");
+
 // Required Spotify
 const Spotify = require('node-spotify-api');
 // Get my Spotify keys:
@@ -42,7 +45,11 @@ var gbmbLiri = {
         // Get my last 20 tweets
         client.get('statuses/user_timeline', { q: "BarakaMahili", count: 20 }, function (error, tweets, response) {
             tweets.forEach((element, index) => {
-                console.log(`\n${index + 1}\nTweet Message: ${element.text}\nCreated at: ${element.created_at}\n------------------------------------`);
+                var tweetData = `\n${index + 1}\nTweet Message: ${element.text}\nCreated at: ${element.created_at}\n------------------------------------`;
+                console.log(tweetData);
+                fs.appendFile("log.txt", ", " + tweetData, (err) => {
+                    if(err) throw err;
+                });
             });
         });
     },
@@ -88,6 +95,9 @@ var gbmbLiri = {
                 `;
                 // Log the data to the bash
                 console.log(showMovieInfo);
+                fs.appendFile("log.txt", ", " + showMovieInfo, (err) => {
+                    if (err) throw err;
+                });
             }
         });
     },
@@ -122,13 +132,14 @@ var gbmbLiri = {
                 |----------------------------------------|
             `;
             console.log(displaySong);
+            fs.appendFile("log.txt", ", " + displaySong, (err) => {
+                if (err) throw err;
+            });
         });  
     },
 
     // do_what_it_says
-    do_what_it_says : () => {
-        // To read what's in the random.txt file, we need to bring in fs
-        var fs = require("fs");
+    do_what_it_says : () => {        
         // Then, we can use that variable to read:
         fs.readFile("random.txt","utf8", (err, data) => {
             // We can do whatever we what to do with the data:
